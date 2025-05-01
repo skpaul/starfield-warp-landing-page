@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Starfield Warp</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: black;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    .center-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #0ff;
+      font-size: 2em;
+      font-family: monospace;
+      text-shadow: 0 0 20px #0ff;
+      z-index: 1;
+      animation: glow 2s infinite alternate;
+    }
+
+    @keyframes glow {
+      0% { text-shadow: 0 0 10px #0ff; }
+      100% { text-shadow: 0 0 30px #0ff; }
+    }
+  </style>
+</head>
+<body>
+  <div class="center-text">Entering Hyperspace...</div>
+  <canvas id="starfield"></canvas>
+
+  <script>
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+
+    const w = canvas.width = window.innerWidth;
+    const h = canvas.height = window.innerHeight;
+
+    const centerX = w / 2;
+    const centerY = h / 2;
+    const starCount = 400;
+
+    for (let i = 0; i < starCount; i++) {
+      stars.push({
+        x: (Math.random() - 0.5) * w,
+        y: (Math.random() - 0.5) * h,
+        z: Math.random() * w
+      });
+    }
+
+    function animate() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+      ctx.fillRect(0, 0, w, h);
+
+      for (let i = 0; i < starCount; i++) {
+        const star = stars[i];
+        star.z -= 4;
+
+        if (star.z <= 0) {
+          star.z = w;
+          star.x = (Math.random() - 0.5) * w;
+          star.y = (Math.random() - 0.5) * h;
+        }
+
+        const sx = centerX + (star.x / star.z) * w;
+        const sy = centerY + (star.y / star.z) * w;
+
+        const radius = 1 - star.z / w;
+        ctx.beginPath();
+        ctx.arc(sx, sy, radius * 2, 0, Math.PI * 2);
+        ctx.fillStyle = '#fff';
+        ctx.fill();
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
